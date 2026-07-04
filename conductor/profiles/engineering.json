@@ -1,0 +1,301 @@
+{
+  "domain": "engineering",
+  "personas": {
+    "coordinator": "Maestro",
+    "scribe": "Score",
+    "theme": "italian_renaissance_artisans",
+    "naming_convention": "Italian Renaissance figures or Italian first names. Pick a name that evokes the role's function.",
+    "_note": "Coordinator (Maestro) and Scribe (Score) are fixed across all profiles."
+  },
+  "version": "3.0.0",
+  "data_classification": "internal",
+  "composition": {
+    "extends": null,
+    "mixins": []
+  },
+  "isolation": {
+    "strategy": "worktree",
+    "base_path": ".worktrees/",
+    "pattern": "{track_id}-{role}",
+    "access_control": {
+      "conductor_access": "read-only-copy",
+      "cross_agent_visibility": false
+    }
+  },
+  "agent_archetypes": [
+    {
+      "role": "data_engineer",
+      "persona_name": "Marco",
+      "system_prompt_template": "You are a data engineer responsible for designing and implementing data models, schemas, and data pipelines. Ensure data integrity and optimal storage patterns.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "code",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "architect",
+      "persona_name": "Brunelleschi",
+      "system_prompt_template": "You are a software architect who designs system structure, defines module boundaries, and ensures the technical approach aligns with product requirements and scalability goals.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "backend_developer",
+      "persona_name": "Leonardo",
+      "system_prompt_template": "You are a backend developer who implements server-side logic, APIs, and services according to the architecture plan. Write clean, tested, production-ready code.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "code",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "frontend_developer",
+      "persona_name": "Raffaella",
+      "system_prompt_template": "You are a frontend developer who builds user-facing interfaces and client-side logic. Implement components that match design specs and integrate with backend APIs.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "code",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "tester",
+      "persona_name": "Galileo",
+      "system_prompt_template": "You are a test engineer who writes and executes unit, integration, and end-to-end tests. Ensure comprehensive coverage and identify edge-case failures.",
+      "context_files": [
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "code",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "code_reviewer",
+      "persona_name": "Michelangelo",
+      "system_prompt_template": "You are a senior code reviewer who evaluates code quality, correctness, security, and adherence to project standards. Provide actionable feedback with specific line references.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "scribe",
+      "persona_name": "Score",
+      "system_prompt_prefix": "You are the Scribe \u2014 the independent observer and logger for this Crescendo run. Your job is to watch everything that happens and maintain a continuous, timestamped log.",
+      "capabilities": [
+        "observation",
+        "logging",
+        "timestamping"
+      ],
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "phase_binding": "all",
+      "output_format": "markdown",
+      "claims_required": false,
+      "_note": "Required in every run. Runs from main checkout (not worktree). Writes to scribe_log.md at repo root."
+    }
+  ],
+  "shared_truth": {
+    "product": "conductor/product.md",
+    "tech_stack": "conductor/tech-stack.md",
+    "workflow": "conductor/workflow.md"
+  },
+  "quality_gates": [
+    {
+      "type": "unit_tests",
+      "mechanism": "deterministic",
+      "required": true
+    },
+    {
+      "type": "lint",
+      "mechanism": "deterministic",
+      "required": true
+    },
+    {
+      "type": "code_review",
+      "mechanism": "heuristic",
+      "agent": "code_reviewer",
+      "required": true
+    }
+  ],
+  "aggregation": {
+    "strategy": "git_merge",
+    "reviewer_agent": "coordinator"
+  },
+  "budget": {
+    "mode": "quota_based",
+    "_budget_note": "In quota_based mode the platform/subscription quota IS the limit; budget_limit_usd and circuit_breaker_token_limit are null. Set mode to 'api_key' and provide numeric values only when using direct API keys.",
+    "suggested_max_agents": 20,
+    "budget_limit_usd": null,
+    "cost_estimation_before_dispatch": false,
+    "circuit_breaker_token_limit": null,
+    "max_total_retries_per_phase": 6
+  },
+  "phases": [
+    {
+      "name": "foundation",
+      "description": "Foundation and data layer setup",
+      "agent_roles": [
+        "data_engineer",
+        "architect"
+      ]
+    },
+    {
+      "name": "implementation",
+      "description": "Core feature implementation",
+      "agent_roles": [
+        "backend_developer",
+        "frontend_developer"
+      ]
+    },
+    {
+      "name": "testing_and_review",
+      "description": "Testing, code review, and quality assurance",
+      "agent_roles": [
+        "tester",
+        "code_reviewer"
+      ]
+    }
+  ],
+  "failure_strategy": {
+    "strategy": "all_or_nothing",
+    "retry_failed": true,
+    "max_retry_attempts": 2
+  },
+  "temporal_constraints": {
+    "deadline_aware": false,
+    "output_ttl_hours": null,
+    "real_time": false
+  },
+  "iteration_policy": {
+    "max_refinement_rounds": 1,
+    "feedback_loop": "code_review",
+    "auto_iterate_on_gate_failure": true
+  },
+  "resource_locking": {
+    "exclusive_files": true,
+    "lock_mechanism": "git_worktree",
+    "conflict_resolution": "merge"
+  },
+  "contradiction_detection": {
+    "layers": [
+      "claims"
+    ],
+    "claims_required": true,
+    "blocking_layers": [
+      "claims"
+    ]
+  },
+  "output_contract": {
+    "claims_required": true,
+    "claims_schema": "entity-attribute-value"
+  },
+  "model_routing": {
+    "status": "advisory",
+    "strategy": "capability_matched",
+    "roles": {
+      "coordinator": {
+        "capabilities_required": [
+          "planning",
+          "orchestration",
+          "long_context"
+        ],
+        "preferred": [
+          "claude-opus-4-8"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "pro"
+      },
+      "worker": {
+        "capabilities_required": [
+          "code_generation",
+          "reasoning"
+        ],
+        "preferred": [
+          "claude-sonnet-5"
+        ],
+        "fallback": [
+          "claude-opus-4-8",
+          "claude-haiku-4-5"
+        ],
+        "min_tier": "pro"
+      },
+      "quality_reviewer": {
+        "capabilities_required": [
+          "reasoning",
+          "analysis"
+        ],
+        "preferred": [
+          "claude-opus-4-8"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "pro"
+      },
+      "bookkeeping": {
+        "capabilities_required": [
+          "file_reading"
+        ],
+        "preferred": [
+          "claude-haiku-4-5"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "flash"
+      }
+    },
+    "session_awareness": {
+      "track_usage_per_model": true
+    }
+  },
+  "autonomy": {
+    "level": "full",
+    "pre_flight": {
+      "estimate_tokens": true,
+      "confirm_commit_scope": true
+    },
+    "during_execution": {
+      "on_gate_failure": "retry_then_skip",
+      "on_ambiguity": "best_judgment",
+      "on_merge_conflict": "write_state_and_stop",
+      "on_quota_exhaustion": "estimate_then_wait_then_stop",
+      "on_agent_error": "retry_then_flag",
+      "heuristic_gates_blocking": "derived",
+      "max_autonomous_decisions": 10
+    },
+    "model_strategy": {
+      "preference": "single_session",
+      "recommended_for_autonomous": "claude-opus-4-8"
+    },
+    "post_run": {
+      "generate_report": true,
+      "flag_items_for_review": true,
+      "auto_commit": true,
+      "auto_merge_to_main": false,
+      "merge_to_main_requires_all_gates_pass": true
+    }
+  }
+}

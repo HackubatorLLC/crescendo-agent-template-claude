@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git worktree:*)",
+      "Bash(git notes:*)",
+      "Bash(just:*)",
+      "Bash(python conductor/bin/:*)",
+      "Bash(gh pr:*)",
+      "Bash(gh issue:*)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(git revert:*)",
+      "Bash(git reset:*)",
+      "Bash(gh repo create:*)",
+      "Bash(rm:*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  }
+}

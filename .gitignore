@@ -1,0 +1,21 @@
+# Secrets — NEVER commit
+.env
+.env.*
+!.env.example
+
+# Runtime orchestration artifacts
+.worktrees/
+orchestration_state.json
+scribe_log.md
+run_report.md
+contradiction_report.md
+input/.sanitized/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db

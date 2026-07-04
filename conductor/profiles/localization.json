@@ -1,0 +1,419 @@
+{
+  "domain": "localization",
+  "personas": {
+    "coordinator": "Maestro",
+    "scribe": "Score",
+    "theme": "unesco_world_heritage",
+    "naming_convention": "Linguists, translators, or cultural figures from the target language's tradition. A Korean translator might be Sejong.",
+    "_note": "Coordinator (Maestro) and Scribe (Score) are fixed across all profiles."
+  },
+  "version": "3.0.0",
+  "data_classification": "internal",
+  "composition": {
+    "extends": null,
+    "mixins": []
+  },
+  "isolation": {
+    "strategy": "folder",
+    "base_path": ".worktrees/",
+    "pattern": "{track_id}-{role}",
+    "access_control": {
+      "conductor_access": "read-only-copy",
+      "cross_agent_visibility": true
+    }
+  },
+  "agent_archetypes": [
+    {
+      "role": "string_extractor",
+      "persona_name": "Sequoia",
+      "system_prompt_template": "You are a string extractor who identifies and extracts all translatable strings from source code and resources. Produce structured catalogs preserving context and placeholders.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "json",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "locale_coordinator",
+      "persona_name": "Babel",
+      "system_prompt_template": "You are a locale coordinator who manages the translation workflow across target locales, tracks completion status, and ensures consistency between language variants.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "translator",
+      "persona_name": "Champollion",
+      "system_prompt_template": "You are a translator who produces accurate, natural-sounding translations for the assigned locale. Preserve meaning, tone, and technical terminology while adapting to cultural context.",
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "output_format": "json",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "cultural_reviewer",
+      "persona_name": "Herodotus",
+      "system_prompt_template": "You are a cultural reviewer who evaluates translations for cultural appropriateness, sensitivity, and local conventions. Flag content that may be offensive or confusing in the target culture.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "terminology_manager",
+      "persona_name": "Webster",
+      "system_prompt_template": "You are a terminology manager who maintains glossaries and ensures consistent use of key terms across all locales. Resolve terminology conflicts and update reference dictionaries.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "json",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "format_validator",
+      "persona_name": "Unicode",
+      "system_prompt_template": "You are a format validator who checks translated strings for correct placeholders, date/number formats, string length constraints, and encoding compliance.",
+      "context_files": [
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "json",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "screenshot_comparator",
+      "persona_name": "Mercator",
+      "system_prompt_template": "You are a screenshot comparator who visually compares rendered UI across locales to detect layout breaks, text truncation, and rendering issues caused by translation.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "rtl_specialist",
+      "persona_name": "Avicenna",
+      "system_prompt_template": "You are an RTL specialist who validates right-to-left language rendering, bidi text handling, and layout mirroring for Arabic, Hebrew, and other RTL locales.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "pluralization_auditor",
+      "persona_name": "Panini",
+      "system_prompt_template": "You are a pluralization auditor who verifies correct plural form handling across locales with different pluralization rules. Ensure CLDR plural categories are properly implemented.",
+      "context_files": [
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "json",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "regression_tester",
+      "persona_name": "Ockham",
+      "system_prompt_template": "You are a regression tester who validates that localization changes do not break existing translations or introduce regressions in previously approved strings.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "translator_es",
+      "persona_name": "Cervantes",
+      "system_prompt_template": "Translate content to Spanish (es), maintaining cultural appropriateness and linguistic accuracy.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "code",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "translator_fr",
+      "persona_name": "Moli\u00e8re",
+      "system_prompt_template": "Translate content to French (fr), maintaining cultural appropriateness and linguistic accuracy.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "code",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "translator_de",
+      "persona_name": "Grimm",
+      "system_prompt_template": "Translate content to German (de), maintaining cultural appropriateness and linguistic accuracy.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "code",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "translator_ja",
+      "persona_name": "Murasaki",
+      "system_prompt_template": "Translate content to Japanese (ja), maintaining cultural appropriateness and linguistic accuracy.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "code",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "translator_ar",
+      "persona_name": "Khalil",
+      "system_prompt_template": "Translate content to Arabic (ar), maintaining cultural appropriateness and linguistic accuracy.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "code",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "localization_lead",
+      "persona_name": "Rosetta",
+      "system_prompt_template": "Coordinate localization workflow, review translations for consistency, and manage locale-specific quality.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "scribe",
+      "persona_name": "Score",
+      "system_prompt_prefix": "You are the Scribe \u2014 the independent observer and logger for this Crescendo run. Your job is to watch everything that happens and maintain a continuous, timestamped log.",
+      "capabilities": [
+        "observation",
+        "logging",
+        "timestamping"
+      ],
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "phase_binding": "all",
+      "output_format": "markdown",
+      "claims_required": false,
+      "_note": "Required in every run. Runs from main checkout (not worktree). Writes to scribe_log.md at repo root."
+    }
+  ],
+  "shared_truth": {
+    "product": "conductor/product.md",
+    "tech_stack": "conductor/tech-stack.md",
+    "workflow": "conductor/workflow.md"
+  },
+  "quality_gates": [
+    {
+      "type": "string_coverage",
+      "mechanism": "deterministic",
+      "required": true
+    },
+    {
+      "type": "cultural_review",
+      "mechanism": "heuristic",
+      "agent": "cultural_reviewer",
+      "required": true
+    }
+  ],
+  "aggregation": {
+    "strategy": "matrix_assembly",
+    "reviewer_agent": "localization_lead"
+  },
+  "budget": {
+    "mode": "quota_based",
+    "_budget_note": "In quota_based mode the platform/subscription quota IS the limit; budget_limit_usd and circuit_breaker_token_limit are null. Set mode to 'api_key' and provide numeric values only when using direct API keys.",
+    "suggested_max_agents": 10,
+    "budget_limit_usd": null,
+    "cost_estimation_before_dispatch": true,
+    "circuit_breaker_token_limit": null,
+    "max_total_retries_per_phase": 6
+  },
+  "phases": [
+    {
+      "name": "extraction",
+      "description": "Extract translatable strings and context from source",
+      "agent_roles": [
+        "string_extractor"
+      ]
+    },
+    {
+      "name": "translation",
+      "description": "Parallel translation across target locales",
+      "agent_roles": [
+        "translator_es",
+        "translator_fr",
+        "translator_de",
+        "translator_ja",
+        "translator_ar"
+      ]
+    },
+    {
+      "name": "cultural_qa",
+      "description": "Cultural appropriateness and consistency review",
+      "agent_roles": [
+        "cultural_reviewer",
+        "localization_lead"
+      ]
+    }
+  ],
+  "failure_strategy": {
+    "strategy": "partial_merge_with_approval",
+    "retry_failed": true,
+    "max_retry_attempts": 2
+  },
+  "temporal_constraints": {
+    "deadline_aware": true,
+    "output_ttl_hours": 2160,
+    "real_time": false
+  },
+  "iteration_policy": {
+    "max_refinement_rounds": 2,
+    "feedback_loop": "cultural_review",
+    "auto_iterate_on_gate_failure": true
+  },
+  "resource_locking": {
+    "exclusive_files": false,
+    "lock_mechanism": "folder_isolation",
+    "conflict_resolution": "merge"
+  },
+  "contradiction_detection": {
+    "layers": [
+      "claims",
+      "similarity"
+    ],
+    "claims_required": true,
+    "similarity_model_tier": "flash",
+    "blocking_layers": [
+      "claims"
+    ]
+  },
+  "output_contract": {
+    "claims_required": true,
+    "claims_schema": "entity-attribute-value"
+  },
+  "model_routing": {
+    "status": "advisory",
+    "strategy": "capability_matched",
+    "roles": {
+      "coordinator": {
+        "capabilities_required": [
+          "planning",
+          "orchestration",
+          "multilingual"
+        ],
+        "preferred": [
+          "claude-opus-4-8"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "pro"
+      },
+      "worker": {
+        "capabilities_required": [
+          "translation",
+          "multilingual",
+          "cultural_awareness"
+        ],
+        "preferred": [
+          "claude-sonnet-5"
+        ],
+        "fallback": [
+          "claude-opus-4-8",
+          "claude-haiku-4-5"
+        ],
+        "min_tier": "standard"
+      },
+      "quality_reviewer": {
+        "capabilities_required": [
+          "multilingual",
+          "cultural_awareness",
+          "analysis"
+        ],
+        "preferred": [
+          "claude-opus-4-8"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "pro"
+      },
+      "bookkeeping": {
+        "capabilities_required": [
+          "file_reading"
+        ],
+        "preferred": [
+          "claude-haiku-4-5"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "flash"
+      }
+    },
+    "session_awareness": {
+      "track_usage_per_model": true
+    }
+  },
+  "autonomy": {
+    "level": "full",
+    "pre_flight": {
+      "estimate_tokens": true,
+      "confirm_commit_scope": true
+    },
+    "during_execution": {
+      "on_gate_failure": "retry_then_skip",
+      "on_ambiguity": "best_judgment",
+      "on_merge_conflict": "write_state_and_stop",
+      "on_quota_exhaustion": "estimate_then_wait_then_stop",
+      "on_agent_error": "retry_then_flag",
+      "heuristic_gates_blocking": "derived",
+      "max_autonomous_decisions": 10
+    },
+    "model_strategy": {
+      "preference": "single_session",
+      "recommended_for_autonomous": "claude-opus-4-8"
+    },
+    "post_run": {
+      "generate_report": true,
+      "flag_items_for_review": true,
+      "auto_commit": true,
+      "auto_merge_to_main": false,
+      "merge_to_main_requires_all_gates_pass": true
+    }
+  }
+}

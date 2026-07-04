@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Crescendo Claims File",
+  "description": "Entity-Attribute-Value claims produced by agents for contradiction detection.",
+  "type": "object",
+  "required": ["claims"],
+  "properties": {
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["entity", "attribute", "value"],
+        "properties": {
+          "entity": { "type": "string", "description": "The subject of the claim" },
+          "attribute": { "type": "string", "description": "What aspect is being claimed" },
+          "value": { "type": "string", "description": "The asserted value" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "Agent's self-assessed confidence" },
+          "source": { "type": "string", "description": "Where this claim comes from" }
+        }
+      }
+    }
+  }
+}

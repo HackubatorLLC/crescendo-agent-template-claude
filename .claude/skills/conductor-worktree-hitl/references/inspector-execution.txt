@@ -1,0 +1,14 @@
+~/git/project/skills/conductor-worktree-hitl/scripts/conductor-inspector /home/user/project --all --short
+
+🔍 Inspecting Conductor Workspace: /home/user/project
+📦 Product: Initial Concept
+STATUS      |  PROGRESS  | RATIO |  GHI  |   AGENT    |   CHANGED   | TRACK ID                                           |  🌳 
+==============================================================================================================================
+NEW         | ░░░░░░░░░░ |  0/17 |  #8   |    dev     |   💻 24min   | multi_env_state_management_20260616                |  🌳 
+COMPLETED   | ████░░░░░░ | 15/37 |  #28  |            |   💻 33min   | pending_mutations_registry_20260602                |    
+COMPLETED   | ██████████ | 11/11 |  #27  |            |   💻 38min   | live_gcp_connectors_20260601                       |    
+COMPLETED   | ██████████ | 24/24 |  #29  |            |   💻 38min   | telegram_incident_creation_20260603                |    
+COMPLETED   | ██████████ |   7/7 |       |    dev     |   💻 49min   | remove_test_project_123_20260616                   |  🌳 
+IN_PROGRESS | ████░░░░░░ |   3/8 |  #5   | annabella  |   💻 59min   | incident_status_taxonomy_20260603                  |  🌳 
+==============================================================================================================================
+TOTAL       |            | 60/104 |       |            |             | 4 completed, 2 open (6 total)                      | 3 🌳

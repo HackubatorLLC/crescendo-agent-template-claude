@@ -1,0 +1,342 @@
+{
+  "domain": "research",
+  "personas": {
+    "coordinator": "Maestro",
+    "scribe": "Score",
+    "theme": "nobel_laureates_and_pioneers",
+    "naming_convention": "Scientists or mathematicians whose primary contribution matches the role. A statistician might be Bayes, a geneticist Mendel.",
+    "_note": "Coordinator (Maestro) and Scribe (Score) are fixed across all profiles."
+  },
+  "version": "3.0.0",
+  "data_classification": "internal",
+  "composition": {
+    "extends": null,
+    "mixins": []
+  },
+  "isolation": {
+    "strategy": "folder",
+    "base_path": ".worktrees/",
+    "pattern": "{track_id}-{role}",
+    "access_control": {
+      "conductor_access": "read-only-copy",
+      "cross_agent_visibility": false
+    }
+  },
+  "agent_archetypes": [
+    {
+      "role": "literature_reviewer",
+      "persona_name": "Lovelace",
+      "system_prompt_template": "You are a literature reviewer who surveys existing research, identifies relevant papers and prior art, and summarizes the state of knowledge on the topic.",
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "data_analyst",
+      "persona_name": "Nightingale",
+      "system_prompt_template": "You are a data analyst who processes datasets, runs statistical analyses, and produces quantitative findings with visualizations and confidence intervals.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "code",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "methodology_expert",
+      "persona_name": "Popper",
+      "system_prompt_template": "You are a methodology expert who designs research protocols, validates experimental approaches, and ensures statistical rigor and reproducibility.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "domain_specialist",
+      "persona_name": "Darwin",
+      "system_prompt_template": "You are a domain specialist who provides deep subject-matter expertise, validates domain-specific assumptions, and contextualizes findings within the field.",
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "synthesis_writer",
+      "persona_name": "Sagan",
+      "system_prompt_template": "You are a synthesis writer who combines findings from multiple analyses into a coherent narrative report with clear conclusions and actionable recommendations.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "peer_reviewer",
+      "persona_name": "Feynman",
+      "system_prompt_template": "You are a peer reviewer who critically evaluates research quality, methodology soundness, and conclusion validity. Identify gaps, biases, and unsupported claims.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "web_researcher",
+      "persona_name": "Berners",
+      "system_prompt_template": "Conduct systematic web research, evaluate source credibility, and extract relevant data.",
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "data_collector",
+      "persona_name": "Humboldt",
+      "system_prompt_template": "Gather and organize primary and secondary data from specified sources.",
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "analyst",
+      "persona_name": "Turing",
+      "system_prompt_template": "Perform quantitative and qualitative analysis of collected data.",
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "report_writer",
+      "persona_name": "Hawking",
+      "system_prompt_template": "Write clear, structured research reports with proper citations and methodology sections.",
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "research_lead",
+      "persona_name": "Curie",
+      "system_prompt_template": "Coordinate research team outputs, ensure methodology consistency, and produce final synthesis.",
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "scribe",
+      "persona_name": "Score",
+      "system_prompt_prefix": "You are the Scribe \u2014 the independent observer and logger for this Crescendo run. Your job is to watch everything that happens and maintain a continuous, timestamped log.",
+      "capabilities": [
+        "observation",
+        "logging",
+        "timestamping"
+      ],
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "phase_binding": "all",
+      "output_format": "markdown",
+      "claims_required": false,
+      "_note": "Required in every run. Runs from main checkout (not worktree). Writes to scribe_log.md at repo root."
+    }
+  ],
+  "shared_truth": {
+    "product": "conductor/product.md",
+    "tech_stack": "conductor/tech-stack.md",
+    "workflow": "conductor/workflow.md"
+  },
+  "quality_gates": [
+    {
+      "type": "source_verification",
+      "mechanism": "deterministic",
+      "required": true
+    },
+    {
+      "type": "recency_check",
+      "mechanism": "deterministic",
+      "required": true
+    }
+  ],
+  "aggregation": {
+    "strategy": "matrix_assembly",
+    "reviewer_agent": "research_lead"
+  },
+  "budget": {
+    "mode": "quota_based",
+    "_budget_note": "In quota_based mode the platform/subscription quota IS the limit; budget_limit_usd and circuit_breaker_token_limit are null. Set mode to 'api_key' and provide numeric values only when using direct API keys.",
+    "suggested_max_agents": 6,
+    "budget_limit_usd": null,
+    "cost_estimation_before_dispatch": true,
+    "circuit_breaker_token_limit": null,
+    "max_total_retries_per_phase": 6
+  },
+  "phases": [
+    {
+      "name": "data_gathering",
+      "description": "Data collection and source acquisition",
+      "agent_roles": [
+        "web_researcher",
+        "data_collector"
+      ]
+    },
+    {
+      "name": "synthesis",
+      "description": "Analysis, synthesis, and report generation",
+      "agent_roles": [
+        "analyst",
+        "report_writer"
+      ]
+    }
+  ],
+  "failure_strategy": {
+    "strategy": "partial_merge_with_approval",
+    "retry_failed": false,
+    "max_retry_attempts": 2
+  },
+  "temporal_constraints": {
+    "deadline_aware": false,
+    "output_ttl_hours": 4320,
+    "real_time": false
+  },
+  "iteration_policy": {
+    "max_refinement_rounds": 2,
+    "feedback_loop": "peer_review",
+    "auto_iterate_on_gate_failure": false
+  },
+  "resource_locking": {
+    "exclusive_files": false,
+    "lock_mechanism": "folder_isolation",
+    "conflict_resolution": "merge"
+  },
+  "contradiction_detection": {
+    "layers": [
+      "claims",
+      "similarity"
+    ],
+    "claims_required": true,
+    "similarity_model_tier": "flash",
+    "blocking_layers": [
+      "claims"
+    ]
+  },
+  "output_contract": {
+    "claims_required": true,
+    "claims_schema": "entity-attribute-value"
+  },
+  "model_routing": {
+    "status": "advisory",
+    "strategy": "capability_matched",
+    "roles": {
+      "coordinator": {
+        "capabilities_required": [
+          "planning",
+          "orchestration"
+        ],
+        "preferred": [
+          "claude-opus-4-8"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "pro"
+      },
+      "worker": {
+        "capabilities_required": [
+          "research",
+          "analysis",
+          "web_search"
+        ],
+        "preferred": [
+          "claude-sonnet-5"
+        ],
+        "fallback": [
+          "claude-opus-4-8",
+          "claude-haiku-4-5"
+        ],
+        "min_tier": "standard"
+      },
+      "quality_reviewer": {
+        "capabilities_required": [
+          "reasoning",
+          "source_verification"
+        ],
+        "preferred": [
+          "claude-opus-4-8"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "pro"
+      },
+      "bookkeeping": {
+        "capabilities_required": [
+          "file_reading"
+        ],
+        "preferred": [
+          "claude-haiku-4-5"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "flash"
+      }
+    },
+    "session_awareness": {
+      "track_usage_per_model": true
+    }
+  },
+  "autonomy": {
+    "level": "full",
+    "pre_flight": {
+      "estimate_tokens": true,
+      "confirm_commit_scope": true
+    },
+    "during_execution": {
+      "on_gate_failure": "retry_then_skip",
+      "on_ambiguity": "best_judgment",
+      "on_merge_conflict": "write_state_and_stop",
+      "on_quota_exhaustion": "estimate_then_wait_then_stop",
+      "on_agent_error": "retry_then_flag",
+      "heuristic_gates_blocking": "derived",
+      "max_autonomous_decisions": 10
+    },
+    "model_strategy": {
+      "preference": "single_session",
+      "recommended_for_autonomous": "claude-opus-4-8"
+    },
+    "post_run": {
+      "generate_report": true,
+      "flag_items_for_review": true,
+      "auto_commit": true,
+      "auto_merge_to_main": false,
+      "merge_to_main_requires_all_gates_pass": true
+    }
+  }
+}

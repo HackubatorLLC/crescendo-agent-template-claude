@@ -1,0 +1,313 @@
+{
+  "domain": "marketing",
+  "personas": {
+    "coordinator": "Maestro",
+    "scribe": "Score",
+    "theme": "midcentury_madison_avenue",
+    "naming_convention": "Advertising/media industry pioneers or mid-century creative figures. Pick a surname that matches the role's function.",
+    "_note": "Coordinator (Maestro) and Scribe (Score) are fixed across all profiles."
+  },
+  "version": "3.0.0",
+  "data_classification": "public",
+  "composition": {
+    "extends": null,
+    "mixins": []
+  },
+  "isolation": {
+    "strategy": "folder",
+    "base_path": ".worktrees/",
+    "pattern": "{track_id}-{role}",
+    "access_control": {
+      "conductor_access": "read-only-copy",
+      "cross_agent_visibility": false
+    }
+  },
+  "agent_archetypes": [
+    {
+      "role": "market_researcher",
+      "persona_name": "Gallup",
+      "system_prompt_template": "You are a market researcher who analyzes target audiences, competitive landscape, and market trends. Deliver data-backed insights to inform creative strategy.",
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "content_strategist",
+      "persona_name": "Ogilvy",
+      "system_prompt_template": "You are a content strategist who develops messaging frameworks, content calendars, and channel strategies aligned with brand goals and audience segments.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "copywriter",
+      "persona_name": "Draper",
+      "system_prompt_template": "You are a copywriter who crafts compelling, on-brand copy for campaigns, landing pages, and marketing materials. Match the brand voice and optimize for engagement.",
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "designer",
+      "persona_name": "Eames",
+      "system_prompt_template": "You are a design specialist who creates visual asset specifications, layout guidelines, and design briefs. Ensure visual consistency with brand standards.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "json",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "brand_reviewer",
+      "persona_name": "Bernbach",
+      "system_prompt_template": "You are a brand reviewer who evaluates all deliverables for consistency with brand guidelines, tone of voice, and visual identity standards.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "seo_specialist",
+      "persona_name": "Nielsen",
+      "system_prompt_template": "You are an SEO specialist who optimizes content for search visibility, keyword targeting, and technical SEO requirements. Provide actionable recommendations.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "brief_writer",
+      "persona_name": "Burnett",
+      "system_prompt_template": "Synthesize research findings into actionable creative briefs for content teams.",
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "editor_in_chief",
+      "persona_name": "Vreeland",
+      "system_prompt_template": "Perform final editorial review, ensure brand voice consistency, and approve content for publication.",
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "scribe",
+      "persona_name": "Score",
+      "system_prompt_prefix": "You are the Scribe \u2014 the independent observer and logger for this Crescendo run. Your job is to watch everything that happens and maintain a continuous, timestamped log.",
+      "capabilities": [
+        "observation",
+        "logging",
+        "timestamping"
+      ],
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "phase_binding": "all",
+      "output_format": "markdown",
+      "claims_required": false,
+      "_note": "Required in every run. Runs from main checkout (not worktree). Writes to scribe_log.md at repo root."
+    }
+  ],
+  "shared_truth": {
+    "product": "conductor/product.md",
+    "tech_stack": "conductor/tech-stack.md",
+    "workflow": "conductor/workflow.md"
+  },
+  "quality_gates": [
+    {
+      "type": "brand_consistency",
+      "mechanism": "heuristic",
+      "agent": "brand_reviewer",
+      "required": true
+    }
+  ],
+  "aggregation": {
+    "strategy": "editorial_merge",
+    "reviewer_agent": "editor_in_chief"
+  },
+  "budget": {
+    "mode": "quota_based",
+    "_budget_note": "In quota_based mode the platform/subscription quota IS the limit; budget_limit_usd and circuit_breaker_token_limit are null. Set mode to 'api_key' and provide numeric values only when using direct API keys.",
+    "suggested_max_agents": 6,
+    "budget_limit_usd": null,
+    "cost_estimation_before_dispatch": true,
+    "circuit_breaker_token_limit": null,
+    "max_total_retries_per_phase": 6
+  },
+  "phases": [
+    {
+      "name": "research_and_brief",
+      "description": "Market research and creative brief development",
+      "agent_roles": [
+        "market_researcher",
+        "brief_writer"
+      ]
+    },
+    {
+      "name": "content_creation",
+      "description": "Content drafting and asset production",
+      "agent_roles": [
+        "copywriter",
+        "designer"
+      ]
+    },
+    {
+      "name": "brand_qa",
+      "description": "Brand consistency and quality assurance review",
+      "agent_roles": [
+        "brand_reviewer",
+        "editor_in_chief"
+      ]
+    }
+  ],
+  "failure_strategy": {
+    "strategy": "best_effort",
+    "retry_failed": false,
+    "max_retry_attempts": 2
+  },
+  "temporal_constraints": {
+    "deadline_aware": true,
+    "output_ttl_hours": 720,
+    "real_time": false
+  },
+  "iteration_policy": {
+    "max_refinement_rounds": 3,
+    "feedback_loop": "brand_review",
+    "auto_iterate_on_gate_failure": false
+  },
+  "resource_locking": {
+    "exclusive_files": false,
+    "lock_mechanism": "folder_isolation",
+    "conflict_resolution": "editorial_merge"
+  },
+  "contradiction_detection": {
+    "layers": [
+      "claims",
+      "similarity",
+      "adversarial"
+    ],
+    "claims_required": true,
+    "similarity_model_tier": "flash",
+    "adversarial_model_tier": "inherit",
+    "blocking_layers": [
+      "claims"
+    ]
+  },
+  "output_contract": {
+    "claims_required": true,
+    "claims_schema": "entity-attribute-value"
+  },
+  "model_routing": {
+    "status": "advisory",
+    "strategy": "capability_matched",
+    "roles": {
+      "coordinator": {
+        "capabilities_required": [
+          "planning",
+          "orchestration"
+        ],
+        "preferred": [
+          "claude-opus-4-8"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "pro"
+      },
+      "worker": {
+        "capabilities_required": [
+          "creative_writing",
+          "brand_voice"
+        ],
+        "preferred": [
+          "claude-sonnet-5"
+        ],
+        "fallback": [
+          "claude-opus-4-8",
+          "claude-haiku-4-5"
+        ],
+        "min_tier": "standard"
+      },
+      "quality_reviewer": {
+        "capabilities_required": [
+          "analysis",
+          "brand_consistency"
+        ],
+        "preferred": [
+          "claude-opus-4-8"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "pro"
+      },
+      "bookkeeping": {
+        "capabilities_required": [
+          "file_reading"
+        ],
+        "preferred": [
+          "claude-haiku-4-5"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "flash"
+      }
+    },
+    "session_awareness": {
+      "track_usage_per_model": true
+    }
+  },
+  "autonomy": {
+    "level": "full",
+    "pre_flight": {
+      "estimate_tokens": true,
+      "confirm_commit_scope": true
+    },
+    "during_execution": {
+      "on_gate_failure": "retry_then_skip",
+      "on_ambiguity": "best_judgment",
+      "on_merge_conflict": "write_state_and_stop",
+      "on_quota_exhaustion": "estimate_then_wait_then_stop",
+      "on_agent_error": "retry_then_flag",
+      "heuristic_gates_blocking": "derived",
+      "max_autonomous_decisions": 10
+    },
+    "model_strategy": {
+      "preference": "single_session",
+      "recommended_for_autonomous": "claude-opus-4-8"
+    },
+    "post_run": {
+      "generate_report": true,
+      "flag_items_for_review": true,
+      "auto_commit": true,
+      "auto_merge_to_main": false,
+      "merge_to_main_requires_all_gates_pass": true
+    }
+  }
+}

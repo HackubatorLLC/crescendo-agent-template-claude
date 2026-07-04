@@ -1,0 +1,343 @@
+{
+  "domain": "legal",
+  "personas": {
+    "coordinator": "Maestro",
+    "scribe": "Score",
+    "theme": "roman_jurists",
+    "naming_convention": "Latin-rooted names or Roman historical figures. Derive from the Latin root of the role's function.",
+    "_note": "Coordinator (Maestro) and Scribe (Score) are fixed across all profiles."
+  },
+  "version": "3.0.0",
+  "data_classification": "confidential",
+  "composition": {
+    "extends": null,
+    "mixins": []
+  },
+  "isolation": {
+    "strategy": "folder",
+    "base_path": ".worktrees/",
+    "pattern": "{track_id}-{role}",
+    "access_control": {
+      "conductor_access": "read-only-copy",
+      "cross_agent_visibility": false
+    }
+  },
+  "agent_archetypes": [
+    {
+      "role": "classifier",
+      "persona_name": "Sortera",
+      "system_prompt_template": "You are a legal classifier who categorizes incoming issues by type, jurisdiction, and urgency. Route matters to the appropriate specialist for analysis.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "json",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "legal_analyst",
+      "persona_name": "Advocata",
+      "system_prompt_template": "You are a legal analyst who researches statutes, case law, and regulatory frameworks relevant to the matter. Produce structured analysis with citations.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "compliance_officer",
+      "persona_name": "Regulus",
+      "system_prompt_template": "You are a compliance officer who reviews deliverables against regulatory requirements and internal policies. Flag non-compliant items with specific rule references.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "senior_counsel",
+      "persona_name": "Seneca",
+      "system_prompt_template": "You are senior counsel providing final legal review and sign-off. Assess risk, validate analysis quality, and ensure all compliance requirements are met.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/tech-stack.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "intake_analyst",
+      "persona_name": "Portia",
+      "system_prompt_template": "Perform initial intake analysis, categorize documents, and identify key legal issues for downstream analysis.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "contract_analyst",
+      "persona_name": "Claudia",
+      "system_prompt_template": "Analyze contract terms, identify risks, obligations, and non-standard clauses.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "regulatory_analyst",
+      "persona_name": "Lexana",
+      "system_prompt_template": "Evaluate regulatory compliance requirements and identify applicable regulations.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "case_researcher",
+      "persona_name": "Cicero",
+      "system_prompt_template": "Research relevant case law, precedents, and statutory interpretations.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "auto"
+    },
+    {
+      "role": "general_counsel",
+      "persona_name": "Praetor",
+      "system_prompt_template": "Provide final legal review, synthesize analysis outputs, and produce authoritative legal recommendations.",
+      "context_files": [
+        "conductor/product.md",
+        "conductor/workflow.md"
+      ],
+      "output_format": "markdown",
+      "claims_required": true,
+      "phase_binding": "manual"
+    },
+    {
+      "role": "scribe",
+      "persona_name": "Score",
+      "system_prompt_prefix": "You are the Scribe \u2014 the independent observer and logger for this Crescendo run. Your job is to watch everything that happens and maintain a continuous, timestamped log.",
+      "capabilities": [
+        "observation",
+        "logging",
+        "timestamping"
+      ],
+      "context_files": [
+        "conductor/product.md"
+      ],
+      "phase_binding": "all",
+      "output_format": "markdown",
+      "claims_required": false,
+      "_note": "Required in every run. Runs from main checkout (not worktree). Writes to scribe_log.md at repo root."
+    }
+  ],
+  "shared_truth": {
+    "product": "conductor/product.md",
+    "tech_stack": "conductor/tech-stack.md",
+    "workflow": "conductor/workflow.md"
+  },
+  "quality_gates": [
+    {
+      "type": "citation_audit",
+      "mechanism": "deterministic",
+      "required": true
+    },
+    {
+      "type": "compliance_review",
+      "mechanism": "heuristic",
+      "agents": [
+        "compliance_officer",
+        "senior_counsel"
+      ],
+      "required": true
+    }
+  ],
+  "aggregation": {
+    "strategy": "document_assembly",
+    "reviewer_agent": "general_counsel"
+  },
+  "budget": {
+    "mode": "quota_based",
+    "_budget_note": "In quota_based mode the platform/subscription quota IS the limit; budget_limit_usd and circuit_breaker_token_limit are null. Set mode to 'api_key' and provide numeric values only when using direct API keys.",
+    "suggested_max_agents": 4,
+    "budget_limit_usd": null,
+    "cost_estimation_before_dispatch": true,
+    "circuit_breaker_token_limit": null,
+    "max_total_retries_per_phase": 6
+  },
+  "phases": [
+    {
+      "name": "classification",
+      "description": "Issue classification and jurisdiction determination",
+      "agent_roles": [
+        "classifier",
+        "intake_analyst"
+      ]
+    },
+    {
+      "name": "parallel_analysis",
+      "description": "Concurrent legal analysis across specializations",
+      "agent_roles": [
+        "contract_analyst",
+        "regulatory_analyst",
+        "case_researcher"
+      ]
+    },
+    {
+      "name": "compliance_review",
+      "description": "Final compliance review and sign-off",
+      "agent_roles": [
+        "compliance_officer",
+        "senior_counsel"
+      ]
+    }
+  ],
+  "failure_strategy": {
+    "strategy": "all_or_nothing",
+    "retry_failed": true,
+    "max_retry_attempts": 2
+  },
+  "temporal_constraints": {
+    "deadline_aware": true,
+    "output_ttl_hours": 2160,
+    "real_time": false
+  },
+  "iteration_policy": {
+    "max_refinement_rounds": 2,
+    "feedback_loop": "compliance_review",
+    "auto_iterate_on_gate_failure": true
+  },
+  "resource_locking": {
+    "exclusive_files": true,
+    "lock_mechanism": "folder_isolation",
+    "conflict_resolution": "human_arbitration"
+  },
+  "contradiction_detection": {
+    "layers": [
+      "claims",
+      "similarity",
+      "adversarial"
+    ],
+    "claims_required": true,
+    "similarity_model_tier": "flash",
+    "adversarial_model_tier": "pro",
+    "blocking_layers": [
+      "claims",
+      "similarity"
+    ]
+  },
+  "output_contract": {
+    "claims_required": true,
+    "claims_schema": "entity-attribute-value"
+  },
+  "model_routing": {
+    "status": "advisory",
+    "strategy": "capability_matched",
+    "roles": {
+      "coordinator": {
+        "capabilities_required": [
+          "planning",
+          "orchestration",
+          "long_context"
+        ],
+        "preferred": [
+          "claude-opus-4-8"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "pro"
+      },
+      "worker": {
+        "capabilities_required": [
+          "reasoning",
+          "legal_analysis",
+          "long_context"
+        ],
+        "preferred": [
+          "claude-sonnet-5"
+        ],
+        "fallback": [
+          "claude-opus-4-8",
+          "claude-haiku-4-5"
+        ],
+        "min_tier": "pro"
+      },
+      "quality_reviewer": {
+        "capabilities_required": [
+          "reasoning",
+          "compliance",
+          "analysis"
+        ],
+        "preferred": [
+          "claude-opus-4-8"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "pro"
+      },
+      "bookkeeping": {
+        "capabilities_required": [
+          "file_reading"
+        ],
+        "preferred": [
+          "claude-haiku-4-5"
+        ],
+        "fallback": [
+          "claude-sonnet-5"
+        ],
+        "min_tier": "flash"
+      }
+    },
+    "session_awareness": {
+      "track_usage_per_model": true
+    }
+  },
+  "autonomy": {
+    "level": "checkpoint",
+    "pre_flight": {
+      "estimate_tokens": true,
+      "confirm_commit_scope": true
+    },
+    "during_execution": {
+      "on_gate_failure": "write_state_and_stop",
+      "on_ambiguity": "write_state_and_stop",
+      "on_merge_conflict": "write_state_and_stop",
+      "on_quota_exhaustion": "estimate_then_wait_then_stop",
+      "on_agent_error": "retry_then_flag",
+      "heuristic_gates_blocking": "derived",
+      "max_autonomous_decisions": 5
+    },
+    "model_strategy": {
+      "preference": "single_session",
+      "recommended_for_autonomous": "claude-opus-4-8"
+    },
+    "post_run": {
+      "generate_report": true,
+      "flag_items_for_review": true,
+      "auto_commit": true,
+      "auto_merge_to_main": false,
+      "merge_to_main_requires_all_gates_pass": true
+    }
+  }
+}
