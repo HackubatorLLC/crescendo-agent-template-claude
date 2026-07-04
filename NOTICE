@@ -1,0 +1,72 @@
+Crescendo: Multi-Agent Orchestration Framework
+Copyright 2026 Hackubator LLC
+
+This product includes software and architectural concepts inspired by or
+derived from the following open-source projects and publications.
+
+This distribution is the "Claude port" — a derivative work adapting the
+original Antigravity/Gemini Crescendo framework to run on Claude (the Claude
+for VS Code extension, the Claude desktop app, and the claude CLI). Per
+Section 4(b) of the Apache License, files modified during this adaptation
+carry notices of the change; the attribution notices below are preserved
+per Section 4(d).
+
+--------------------------------------------------------------------------------
+
+ORIGINAL INSPIRATION
+
+"Orchestrating with Antigravity: A Crescendo of Agents (Part 2)"
+by Riccardo Carlesso (@palladius), Developer Advocate, Google Cloud
+https://ricc.rocks/en/posts/technology/2026-06-16-crescendo-of-agents-part-2/
+
+The name "Crescendo," the multi-agent orchestration architecture, the
+conductor-worktree-hitl skill, and the original Agostina coordinator
+concept all originate from this work.
+
+Repository: https://github.com/palladius/gemini-cli-custom-commands
+
+--------------------------------------------------------------------------------
+
+UPSTREAM DEPENDENCIES
+
+Conductor
+Copyright (c) Keith
+https://github.com/gemini-cli-extensions/conductor
+Licensed under the terms of its original license.
+
+The Rails-like track/task orchestration framework that Crescendo's
+orchestration system is built on.
+
+---
+
+gemini-superpowers
+Copyright (c) Barrett Storck
+https://github.com/barretstorck/gemini-superpowers
+Licensed under the terms of its original license.
+
+Provides the using-git-worktrees skill for parallel agent isolation.
+
+--------------------------------------------------------------------------------
+
+ADDITIONAL INSPIRATIONS
+
+"One prompt, four subagents and ninety seconds to get a working app"
+by Richard Seroter
+https://seroter.com/2026/06/01/one-prompt-four-subagents-and-ninety-seconds-to-get-a-working-app/
+
+The parallel subagent dispatch pattern.
+
+---
+
+"How I turned Gemini CLI into a multi-agent system"
+by Paul, AI Positive
+https://aipositive.substack.com/p/how-i-turned-gemini-cli-into-a-multi
+
+The "State on Disk" persistence pattern that inspired the quota
+recovery system.
+
+--------------------------------------------------------------------------------
+
+NOTE: This NOTICE file is required by Section 4(d) of the Apache License,
+Version 2.0. Derivative works must include a readable copy of these
+attribution notices.
