@@ -6,6 +6,37 @@ import subprocess
 import re
 from datetime import datetime
 
+
+def _load_dotenv():
+    """Load KEY=VALUE pairs from the nearest .env (walking up from cwd) into the
+    environment WITHOUT overriding values already set. This lets the `gh`
+    subprocess inherit GH_TOKEN so Crescendo acts as its own GitHub identity,
+    regardless of how the script was launched (desktop app, VS Code, or CLI).
+    A session-exported GH_TOKEN still wins because we use setdefault."""
+    d = os.getcwd()
+    while True:
+        env_path = os.path.join(d, ".env")
+        if os.path.isfile(env_path):
+            try:
+                with open(env_path, encoding="utf-8") as fh:
+                    for line in fh:
+                        line = line.strip()
+                        if not line or line.startswith("#") or "=" not in line:
+                            continue
+                        key, val = line.split("=", 1)
+                        os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
+            except OSError:
+                pass
+            return
+        parent = os.path.dirname(d)
+        if parent == d:
+            return
+        d = parent
+
+
+_load_dotenv()
+
+
 def find_conductor_dir():
     # Look for the nearest 'conductor' folder going up the directory tree
     curr = os.getcwd()

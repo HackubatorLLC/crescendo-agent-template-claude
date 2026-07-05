@@ -96,10 +96,21 @@ def main() -> int:
     shutil.copytree("conductor", dest_conductor)
     make_readonly(dest_conductor)
 
-    # Copy .env read-only if present (agents must not mutate shared credentials).
+    # Copy .env read-only if present (agents must not mutate shared credentials),
+    # but STRIP GitHub-identity tokens: only the Coordinator (Maestro) on the main
+    # checkout pushes and opens PRs, so subagents in worktrees must not inherit
+    # GH_TOKEN and be able to act on GitHub as the project identity.
     if Path(".env").exists():
-        print("Copying .env (read-only)...")
-        shutil.copy2(".env", wt / ".env")
+        print("Copying .env (read-only, GitHub token stripped)...")
+        secret_keys = {"GH_TOKEN", "GITHUB_TOKEN", "GITHUB_PERSONAL_ACCESS_TOKEN"}
+        kept_lines = []
+        for line in Path(".env").read_text(encoding="utf-8").splitlines():
+            key = line.split("=", 1)[0].strip() if "=" in line else ""
+            if key in secret_keys:
+                kept_lines.append(f"# {key} withheld from worktree (Coordinator-only)")
+            else:
+                kept_lines.append(line)
+        (wt / ".env").write_text("\n".join(kept_lines) + "\n", encoding="utf-8")
         make_readonly(wt / ".env")
 
     # Keep the copied conductor/ and .env out of the worktree's git index.

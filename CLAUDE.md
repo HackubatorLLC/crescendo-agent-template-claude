@@ -102,6 +102,28 @@ Push validated integration branch → gh pr create → gh pr status
 Final Report + Scribe log
 ```
 
+## GitHub Identity (GH_TOKEN — read this before any `gh`/`git push`)
+
+Crescendo authenticates to GitHub as a **project-local identity**, isolated from any
+other GitHub account the user is logged into elsewhere. The mechanism:
+
+- The identity is a Personal Access Token stored as `GH_TOKEN` in the project's
+  git-ignored `.env` (set during `conductor-setup`). `gh` honors `GH_TOKEN` and it
+  takes precedence over the machine's `gh auth login` **without modifying it**.
+- The engine picks this up automatically: `just` targets auto-load `.env`
+  (`set dotenv-load := true`), and the `gh`-based bin scripts (`poll_ghi_questions.py`,
+  `inject-ghi`) load `.env` themselves. So their `gh` subprocess is authenticated in
+  any host (desktop app, VS Code, CLI).
+- `git push` authenticates via a **repo-local** credential helper
+  (`git config --local credential."https://github.com".helper "!gh auth git-credential"`),
+  also set during setup — it never touches global git config.
+
+**Rules:**
+1. **NEVER run `gh auth login`, `gh auth switch`, or `gh auth setup-git --global`.** Those change the machine-global GitHub account and would disrupt the user's parallel work under a different account.
+2. Run GitHub actions through the engine so `.env` is loaded: prefer `just create-pr …`, `just push-integration <branch>`, and the `conductor/bin/*ghi*` scripts over bare `gh`/`git push`. If you must call `gh`/`git` directly, ensure `GH_TOKEN` is in the environment first.
+3. Before the first push/PR of a run, verify identity with `just gh-whoami` — it must print the project's intended account, not the user's personal login. If it doesn't, stop and tell the user.
+4. `GH_TOKEN` lives at the **main checkout only**. `init_worktree.py` strips it from worktree `.env` copies, so subagents cannot act on GitHub. Only you (the Coordinator, on the main checkout) push and open PRs.
+
 ## GHI Signing Convention
 
 All agent comments on GitHub Issues are signed:

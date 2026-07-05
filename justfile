@@ -1,9 +1,20 @@
 # Orchestration targets for Conductor Crescendo Flow (cross-platform).
 # No `set shell` override: recipes delegate to Python so they run identically
-# on macOS, Linux, and Windows. Requires: just, git, python3 (>=3.8), gh.
+# on macOS, Linux, and Windows. Requires: just, git, python3 (>=3.9), gh.
+
+# Auto-load the project's .env for every recipe. This is how Crescendo runs as
+# its own GitHub identity: put GH_TOKEN=<pat> in .env and every gh/git call in a
+# `just` target authenticates as that account — without touching your global
+# `gh auth login` or any other GitHub account you use in parallel.
+set dotenv-load := true
 
 default:
     @just --list
+
+# Show which GitHub identity Crescendo will act as (reads GH_TOKEN from .env).
+# Expect your Crescendo bot/service account here, NOT your personal login.
+gh-whoami:
+    gh api user --jq .login
 
 # Initialize a new agent worktree with read-only conductor/ + .env copies.
 # All OS-specific isolation (ACLs / chmod) lives in init_worktree.py so this
@@ -34,3 +45,13 @@ inspect-all:
 # Poll GitHub Issues for human answers to agent questions
 poll-questions:
     python conductor/bin/poll_ghi_questions.py
+
+# Push an integration branch as the Crescendo identity (GH_TOKEN from .env).
+# Requires the repo-local credential helper set by conductor-setup:
+#   git config --local credential."https://github.com".helper "!gh auth git-credential"
+push-integration branch:
+    git push origin {{branch}}
+
+# Open the unified PR as the Crescendo identity (GH_TOKEN from .env).
+create-pr title head base="main":
+    gh pr create --base {{base}} --head {{head}} --title "{{title}}" --fill

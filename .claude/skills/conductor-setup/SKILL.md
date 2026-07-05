@@ -375,7 +375,37 @@ PLAN MODE PROTOCOL: This setup process runs entirely within Plan Mode. While in 
 4.  **Action:** Update `conductor/workflow.md` based on all user answers from both steps.
 
 
-### 2.6 Finalization
+### 2.6 GitHub Identity Setup (Interactive)
+
+**PROTOCOL: Configure a dedicated GitHub identity for this project so Crescendo's GitHub actions (GHI human-in-the-loop, `gh pr create`, and integration pushes) run as a chosen account WITHOUT disturbing any other GitHub account the user is logged into elsewhere. NEVER run `gh auth login` — that changes the machine-global active account and would affect the user's other work.**
+
+1.  **Explain and ask.** Tell the user: *"Crescendo can run its GitHub actions as a dedicated account (a bot or a specific user) that is fully isolated from any other `gh` login you use in parallel. This uses a project-local `GH_TOKEN` in `.env` — it never touches your global `gh auth login`."* Then use the AskUserQuestion tool:
+    - **header:** "GitHub identity"
+    - **question:** "How should Crescendo authenticate to GitHub for this project?"
+    - **type:** "choice"
+    - **options:**
+        - Label: "Dedicated token", Description: "I'll provide a Personal Access Token for a specific account — isolated from my other gh logins (recommended)."
+        - Label: "Use ambient gh", Description: "Use whatever account `gh` is currently logged into on this machine."
+
+2.  **If "Use ambient gh":** Skip token setup. Note in the summary that GitHub actions will use the machine's active `gh` account, and proceed to Finalization.
+
+3.  **If "Dedicated token":**
+    a. **Obtain the token.** Ask the user to paste a GitHub Personal Access Token for the account Crescendo should act as. Recommend a **fine-grained PAT** scoped to this project's repo with **Contents: Read/Write, Issues: Read/Write, Pull requests: Read/Write** (add **Workflows: Read/Write** only if agents will edit `.github/workflows/`). **Do NOT echo the token back in your output or the chat.**
+    b. **Write it to `.env`.** Using the Write/Edit tool, create or update `.env` at the **project root** (not under `conductor/`) and set:
+        ```
+        GH_TOKEN=<the token the user provided>
+        ```
+        Preserve any existing `.env` lines. Confirm `.env` is listed in `.gitignore` (it is in this template) so the token is never committed. Do NOT print the token value in your confirmation — say "Wrote GH_TOKEN to .env (git-ignored)."
+    c. **Scope git to this identity, per-repo only.** Run:
+        ```bash
+        git config --local credential."https://github.com".helper "!gh auth git-credential"
+        ```
+        This makes `git push` in THIS repository authenticate via the `GH_TOKEN` identity, without modifying global git config or any other account.
+    d. **Verify.** Run `just gh-whoami` (it reads `GH_TOKEN` from `.env`) and confirm it prints the expected account login. If it prints the wrong account or errors, re-check the token value and that `.env` is at the project root.
+    e. **Reminder for the run:** the token stays at the **main checkout only** — `init_worktree.py` strips `GH_TOKEN` from worktree copies, so subagents cannot act on GitHub. Only the Coordinator (main checkout) pushes and opens PRs.
+
+
+### 2.7 Finalization
 1.  **Generate Index File:**
     -   Create `conductor/index.md` with the following content:
         ```markdown

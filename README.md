@@ -181,6 +181,30 @@ ship identical skill sources.
 
 ---
 
+## GitHub identity (run as a dedicated account, isolated from your other logins)
+
+Crescendo does its GitHub work — GHI human-in-the-loop, integration pushes, and PRs —
+through the `gh` CLI, authenticated as a **project-local identity** that never disturbs
+any other GitHub account you use in parallel.
+
+`conductor-setup` prompts for a Personal Access Token and wires this up automatically.
+Under the hood:
+
+- The token is stored as `GH_TOKEN` in the git-ignored `.env`. `gh` honors `GH_TOKEN`
+  and it takes precedence over your machine's `gh auth login` **without modifying it**.
+- `just` targets auto-load `.env` and the `gh`-based scripts load it themselves, so the
+  token reaches `gh` in any host — desktop app, VS Code, or CLI — with nothing to
+  re-export each session.
+- `git push` uses a repo-local credential helper, so it authenticates as the same
+  identity without touching your global git config.
+- The token stays at the main checkout only; `init_worktree.py` strips it from worktree
+  copies so subagents can't act on GitHub.
+
+Verify the active identity any time with `just gh-whoami`. **Never run `gh auth login`
+for a Crescendo project** — that would change your machine-global account.
+
+---
+
 ## Acknowledgments
 
 Crescendo was built on the shoulders of an open-source community. The following
